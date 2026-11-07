@@ -20,13 +20,13 @@ export const Crest = ({ className = 'h-11 w-11' }: { className?: string }) => (
 
 const Logo = ({ tone = 'light', className = '' }: { tone?: 'light' | 'dark'; className?: string }) => (
   <Link to="/" className={`group flex items-center gap-3 ${className}`} aria-label="The Elegance Hotel by Ambience — home">
-    <Crest className="h-11 w-11 shrink-0 transition-transform duration-700 group-hover:rotate-[360deg]" />
+    <Crest className="h-10 w-10 shrink-0 sm:h-11 sm:w-11 transition-transform duration-700 group-hover:rotate-[360deg]" />
     <span className="flex flex-col leading-none">
-      <span className={`font-display text-[21px] font-medium uppercase tracking-[0.2em] ${tone === 'light' ? 'text-ivory' : 'text-ink'}`}>
-        The Elegance
+      <span className={`whitespace-nowrap font-display text-[15px] font-medium uppercase tracking-[0.14em] sm:text-[18px] sm:tracking-[0.16em] ${tone === 'light' ? 'text-ivory' : 'text-ink'}`}>
+        The Elegance Hotel
       </span>
-      <span className="mt-1.5 text-[8.5px] font-semibold uppercase tracking-[0.42em] text-gold">
-        Hotel <span className="opacity-60">·</span> by Ambience
+      <span className="mt-1.5 font-display text-[13px] italic tracking-[0.06em] text-gold-light sm:text-[14px]">
+        by Ambience
       </span>
     </span>
   </Link>

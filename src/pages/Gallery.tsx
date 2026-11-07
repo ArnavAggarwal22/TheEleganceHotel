@@ -35,7 +35,7 @@ const Gallery = () => {
       <PageHero
         image={IMAGES.pageGallery}
         crumb="Gallery"
-        eyebrow="Moments at The Elegance"
+        eyebrow="Moments at The Elegance Hotel"
         title={<>The <em className="italic text-gold-light">Gallery</em></>}
         intro="Step inside — rooms, spaces and the small details that make a stay feel special."
       />

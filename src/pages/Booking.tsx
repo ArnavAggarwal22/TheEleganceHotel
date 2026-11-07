@@ -137,7 +137,7 @@ const Booking = () => {
         crumb="Book Your Stay"
         eyebrow="Reservations"
         title={<>Reserve your <em className="italic text-gold-light">stay</em></>}
-        intro="Book direct with The Elegance for our best available rate and a personal confirmation from our team."
+        intro="Book direct with The Elegance Hotel for our best available rate and a personal confirmation from our team."
       />
 
       <section id="booking-flow" className="py-16 md:py-24">

@@ -160,7 +160,7 @@ export const ROOMS: Room[] = [
     name: 'Elegance Suite',
     short: 'Our signature suite — refined, spacious, unforgettable.',
     description:
-      'The Elegance Suite is our most indulgent space, with a separate sitting area, a king-size bed, curated décor and premium amenities throughout. Perfect for families, celebrations and guests who simply want the very best of The Elegance.',
+      'The Elegance Suite is our most indulgent space, with a separate sitting area, a king-size bed, curated décor and premium amenities throughout. Perfect for families, celebrations and guests who simply want the very best of The Elegance Hotel.',
     price: 4499,
     size: '320 sq ft',
     maxGuests: 3,

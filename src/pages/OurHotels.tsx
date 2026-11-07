@@ -43,7 +43,7 @@ const OurHotels = () => (
             <p className="mt-5 text-[15.5px] leading-relaxed text-ink/65">
               Whether you stay with us at{' '}
               <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-dark link-underline">The Ambience Hotel</a>{' '}
-              near Unicity Homes or at The Elegance on the
+              near Unicity Homes or at The Elegance Hotel on the
               Ambala–Chandigarh Highway, you'll find the same care in every detail — and the same team ready to
               help with anything you need.
             </p>

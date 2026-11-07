@@ -16,9 +16,9 @@ const Loader = () => (
         initial={{ opacity: 0, letterSpacing: '0.6em' }}
         animate={{ opacity: 1, letterSpacing: '0.24em' }}
         transition={{ duration: 1.3, ease: EASE, delay: 0.2 }}
-        className="mt-7 font-display text-3xl uppercase text-ivory sm:text-4xl"
+        className="mt-7 px-4 font-display text-[1.7rem] uppercase text-ivory sm:text-4xl"
       >
-        The Elegance
+        The Elegance Hotel
       </motion.h1>
       <motion.div
         initial={{ scaleX: 0 }}
@@ -30,9 +30,9 @@ const Loader = () => (
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8, duration: 0.8 }}
-        className="mt-4 text-[10px] uppercase tracking-[0.5em] text-gold"
+        className="mt-4 font-display text-xl italic tracking-[0.08em] text-gold-light"
       >
-        Hotel · by Ambience
+        by Ambience
       </motion.p>
     </div>
   </motion.div>

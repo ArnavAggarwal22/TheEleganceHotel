@@ -10,7 +10,7 @@ const Rooms = () => (
     <PageHero
       image={IMAGES.pageRooms}
       crumb="Rooms & Suites"
-      eyebrow="Stay at The Elegance"
+      eyebrow="Stay at The Elegance Hotel"
       title={<>Rooms &amp; <em className="italic text-gold-light">Suites</em></>}
       intro="Three categories of calm, carefully finished rooms — each designed for deep sleep, easy work and unhurried mornings."
     />

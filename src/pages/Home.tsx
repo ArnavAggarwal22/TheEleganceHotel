@@ -37,7 +37,7 @@ const Hero = () => {
     return () => clearTimeout(t);
   }, [slide]);
 
-  const words = ['The', 'Elegance'];
+  const words = ['The', 'Elegance', 'Hotel'];
   const [D] = useState(introDelay);
 
   return (
@@ -67,7 +67,7 @@ const Hero = () => {
           Welcome to Zirakpur's newest address
         </motion.span>
 
-        <h1 className="mt-8 font-display text-[3.6rem] font-medium uppercase leading-[0.9] tracking-[0.04em] sm:text-[6rem] lg:text-[8.5rem]">
+        <h1 className="mt-8 max-w-[18ch] font-display text-[3.3rem] font-medium uppercase leading-[0.95] tracking-[0.03em] sm:text-[4.6rem] lg:max-w-none lg:text-[5.6rem] xl:text-[6.4rem]">
           {words.map((w, i) => (
             <span key={w} className="inline-block overflow-hidden px-[0.12em] align-bottom">
               <motion.span
@@ -89,7 +89,7 @@ const Hero = () => {
           className="mt-4 flex items-center gap-4 sm:mt-6"
         >
           <span className="h-px w-10 bg-gold sm:w-20" />
-          <span className="font-display text-xl italic text-gold-light sm:text-3xl">Hotel by Ambience</span>
+          <span className="font-display text-2xl italic text-gold-light sm:text-3xl">by Ambience</span>
           <span className="h-px w-10 bg-gold sm:w-20" />
         </motion.div>
 
@@ -175,7 +175,7 @@ const Intro = () => {
       <div className="container grid items-center gap-16 lg:grid-cols-12 lg:gap-10">
         <div className="relative lg:col-span-6">
           <motion.div style={{ y: yBig }} className="relative aspect-[4/5] w-[82%] overflow-hidden">
-            <Img src={IMAGES.intro} alt="The Elegance lobby lounge" className="h-full w-full object-cover" />
+            <Img src={IMAGES.intro} alt="The Elegance Hotel lobby lounge" className="h-full w-full object-cover" />
           </motion.div>
           <motion.div style={{ y: ySmall }} className="absolute -bottom-6 right-0 aspect-square w-[46%] overflow-hidden border-[10px] border-ivory shadow-2xl">
             <Img src={IMAGES.introSecondary} alt="Morning coffee in bed" className="h-full w-full object-cover" />
@@ -194,7 +194,7 @@ const Intro = () => {
             <p className="mt-8 text-[15.5px] leading-relaxed text-ink/65">
               Born from the family behind{' '}
               <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-dark link-underline">The Ambience Hotel</a>,
-              The Elegance is our most refined address yet. Every
+              The Elegance Hotel is our most refined address yet. Every
               room is composed with soft textures, warm light and quiet details — a calm, polished retreat for
               business travellers, families and weekend explorers.
             </p>
@@ -310,7 +310,7 @@ const Dining = () => {
       <div className="container grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
         <Reveal x={-40} y={0} className="relative">
           <div className="aspect-[5/6] overflow-hidden">
-            <Img src={IMAGES.dining} alt="Dining at The Elegance" className="h-full w-full object-cover transition-transform duration-[2s] hover:scale-105" />
+            <Img src={IMAGES.dining} alt="Dining at The Elegance Hotel" className="h-full w-full object-cover transition-transform duration-[2s] hover:scale-105" />
           </div>
           <div className="absolute -bottom-8 -right-4 hidden w-56 bg-ivory p-6 shadow-2xl sm:block lg:-right-10">
             <p className="text-[10px] uppercase tracking-luxe text-gold-dark">Served all day</p>
@@ -369,7 +369,7 @@ const GalleryPreview = () => {
     <section className="bg-ink py-24 text-ivory md:py-32">
       <div className="container">
         <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
-          <SectionHeading tone="light" eyebrow="Gallery" title={<>A glimpse of <em className="italic text-gold-light">The Elegance</em></>} />
+          <SectionHeading tone="light" eyebrow="Gallery" title={<>A glimpse of <em className="italic text-gold-light">The Elegance Hotel</em></>} />
           <Reveal delay={0.2}><Link to="/gallery" className="btn-ghost-light">View Full Gallery <ArrowRight size={15} /></Link></Reveal>
         </div>
         <div className="mt-14 grid auto-rows-[200px] grid-cols-2 gap-3 md:auto-rows-[260px] md:grid-cols-4 md:gap-4">
@@ -438,7 +438,7 @@ const Testimonials = () => {
           </div>
           <Reveal delay={0.2}>
             <p className="mx-auto mt-10 max-w-lg text-sm text-ink/50">
-              The same team and standards that earned these words now welcome you at The Elegance.
+              The same team and standards that earned these words now welcome you at The Elegance Hotel.
             </p>
           </Reveal>
         </div>

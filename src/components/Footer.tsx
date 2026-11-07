@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, MapPin, Phone, MessageCircle } from 'lucide-react';
-import Logo from './Logo';
+import { Lockup } from './Logo';
 import Reveal from './Reveal';
 import Img from './Img';
 import { AMBIENCE, COLLECTION, HOTEL, IMAGES, ROOMS, mapsLink, whatsappLink } from '@/data/hotel';
@@ -37,7 +37,10 @@ const Footer = () => (
     <div className="container border-t border-ivory/10 pb-28 pt-16 lg:pb-12">
       <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <Logo />
+          <Link to="/" aria-label="The Elegance Hotel by Ambience — home" className="inline-flex flex-col items-center">
+            <Lockup className="w-56" />
+            <span className="mt-3 font-display text-lg italic tracking-[0.06em] text-gold-light">by Ambience</span>
+          </Link>
           <p className="mt-6 max-w-sm text-sm leading-relaxed">
             {HOTEL.fullName} — a refined stay on the Ambala–Chandigarh Highway, crafted by the family behind{' '}
             <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-light link-underline">The Ambience Hotel</a>.

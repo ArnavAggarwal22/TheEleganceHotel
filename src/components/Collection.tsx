@@ -38,7 +38,6 @@ const Collection = ({ showIntro = true }: { showIntro?: boolean }) => {
             </span>
           </div>
           <div className="relative flex flex-col justify-center p-8 sm:p-12 lg:col-span-5">
-            <Crest className="mb-6 h-12 w-12 opacity-80" />
             <p className="text-[10px] uppercase tracking-luxe text-gold">Our Parent Hotel</p>
             <h3 className="mt-3 text-4xl leading-tight sm:text-5xl">{flagship.name}</h3>
             <p className="mt-3 flex items-start gap-2 text-sm text-ivory/55">
@@ -98,7 +97,8 @@ const Collection = ({ showIntro = true }: { showIntro?: boolean }) => {
                       </span>
                     )}
                   </div>
-                  <div className="mt-24">
+                  <div className="mt-16">
+                    {h.current && <Crest className="mb-4 h-16 w-16" />}
                     <h3 className="text-4xl leading-tight">
                       {h.name} <span className="block font-sans text-[11px] uppercase tracking-luxe text-gold">by Ambience</span>
                     </h3>

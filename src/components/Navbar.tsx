@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, Phone, X, MapPin } from 'lucide-react';
 import Logo from './Logo';
 import { EASE } from './Reveal';
-import { HOTEL } from '@/data/hotel';
+import { AMBIENCE, HOTEL } from '@/data/hotel';
 
 export const NAV_LINKS = [
   { label: 'Stay', to: '/rooms' },
@@ -43,18 +43,25 @@ const Navbar = () => {
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, ease: EASE, delay: 0.2 }}
-        className="fixed inset-x-0 top-0 z-50"
+        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color] duration-500 ${
+          scrolled
+            ? 'border-b border-gold/15 bg-ink/90 shadow-[0_10px_40px_-20px_rgba(0,0,0,.6)] backdrop-blur-xl'
+            : 'border-b border-transparent'
+        }`}
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
-        {/* Utility bar */}
+        {/* Utility bar — collapses fully (no leftover border) once scrolled */}
         <div
-          className={`hidden overflow-hidden border-b border-ivory/10 text-ivory/70 transition-all duration-500 lg:block ${
-            scrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
+          className={`hidden overflow-hidden text-ivory/70 transition-all duration-500 lg:block ${
+            scrolled ? 'max-h-0 border-b-0 opacity-0' : 'max-h-12 border-b border-ivory/10 opacity-100'
           }`}
         >
           <div className="container flex items-center justify-between py-2.5 text-[11px] tracking-[0.18em]">
             <span className="uppercase">
-              A member of <span className="text-gold-light">The Ambience Hotels</span>
+              A member of{' '}
+              <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-light link-underline">
+                The Ambience Hotels
+              </a>
             </span>
             <div className="flex items-center gap-8">
               <a href={`tel:${HOTEL.phoneTel}`} className="flex items-center gap-2 transition hover:text-gold-light">
@@ -69,9 +76,7 @@ const Navbar = () => {
 
         {/* Main bar */}
         <div
-          className={`transition-all duration-500 ${
-            scrolled ? 'border-b border-gold/15 bg-ink/85 py-3 shadow-[0_10px_40px_-20px_rgba(0,0,0,.6)] backdrop-blur-xl' : 'py-5'
-          }`}
+          className={`transition-[padding] duration-500 ${scrolled ? 'py-3' : 'py-5'}`}
         >
           <nav className="container flex items-center justify-between gap-6">
             <Logo />

@@ -13,7 +13,7 @@ import { introDelay } from '@/lib/intro';
 import RoomCard from '@/components/RoomCard';
 import SectionHeading from '@/components/SectionHeading';
 import {
-  AMENITIES, COLLECTION, GALLERY, HOTEL, IMAGES, NEARBY, ROOMS, TESTIMONIALS, TRAVEL_TIMES,
+  AMBIENCE, AMENITIES, COLLECTION, GALLERY, HOTEL, IMAGES, NEARBY, ROOMS, TESTIMONIALS, TRAVEL_TIMES,
   mapsEmbedUrl, mapsLink, whatsappLink,
 } from '@/data/hotel';
 
@@ -192,7 +192,9 @@ const Intro = () => {
           />
           <Reveal delay={0.2}>
             <p className="mt-8 text-[15.5px] leading-relaxed text-ink/65">
-              Born from the family behind The Ambience Hotel, The Elegance is our most refined address yet. Every
+              Born from the family behind{' '}
+              <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-dark link-underline">The Ambience Hotel</a>,
+              The Elegance is our most refined address yet. Every
               room is composed with soft textures, warm light and quiet details — a calm, polished retreat for
               business travellers, families and weekend explorers.
             </p>
@@ -342,9 +344,14 @@ const Dining = () => {
             <div>
               <p className="text-[10px] uppercase tracking-luxe text-gold">Weddings & Celebrations</p>
               <p className="mt-2 font-display text-2xl leading-snug">Planning a big event? Host it at our flagship's Grand Banquet Hall.</p>
-              <a href={`tel:${ambience.phoneTel}`} className="mt-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-light link-underline">
-                Enquire at The Ambience <ArrowUpRight size={13} />
-              </a>
+              <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+                <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-light link-underline">
+                  Visit The Ambience <ArrowUpRight size={13} />
+                </a>
+                <a href={`tel:${ambience.phoneTel}`} className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/60 transition hover:text-gold-light">
+                  <Phone size={12} /> {ambience.phoneDisplay}
+                </a>
+              </div>
             </div>
           </Reveal>
         </div>
@@ -413,7 +420,8 @@ const Testimonials = () => {
                   “{t.text}”
                 </blockquote>
                 <figcaption className="mt-8 text-[11px] uppercase tracking-[0.25em] text-ink/50">
-                  <span className="font-semibold text-ink">{t.name}</span> · Guest at The Ambience Hotel · {t.date}
+                  <span className="font-semibold text-ink">{t.name}</span> · Guest at{' '}
+                  <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="link-underline hover:text-gold-dark">The Ambience Hotel</a> · {t.date}
                 </figcaption>
               </motion.figure>
             </AnimatePresence>

@@ -3,7 +3,7 @@ import { ArrowUpRight, MapPin, Phone, MessageCircle } from 'lucide-react';
 import Logo from './Logo';
 import Reveal from './Reveal';
 import Img from './Img';
-import { COLLECTION, HOTEL, IMAGES, ROOMS, mapsLink, whatsappLink } from '@/data/hotel';
+import { AMBIENCE, COLLECTION, HOTEL, IMAGES, ROOMS, mapsLink, whatsappLink } from '@/data/hotel';
 
 const Footer = () => (
   <footer className="relative bg-ink text-ivory/60">
@@ -39,7 +39,8 @@ const Footer = () => (
         <div className="lg:col-span-4">
           <Logo />
           <p className="mt-6 max-w-sm text-sm leading-relaxed">
-            {HOTEL.fullName} — a refined stay on the Ambala–Chandigarh Highway, crafted by the family behind The Ambience Hotel.
+            {HOTEL.fullName} — a refined stay on the Ambala–Chandigarh Highway, crafted by the family behind{' '}
+            <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-light link-underline">The Ambience Hotel</a>.
           </p>
           <div className="mt-6 flex gap-3">
             <a href={`tel:${HOTEL.phoneTel}`} aria-label="Call" className="flex h-10 w-10 items-center justify-center rounded-full border border-ivory/15 transition hover:border-gold hover:text-gold-light"><Phone size={15} /></a>
@@ -85,10 +86,16 @@ const Footer = () => (
             <ul className="space-y-2 text-sm">
               {COLLECTION.filter((h) => !h.comingSoon).map((h) => (
                 <li key={h.id}>
-                  <Link to="/our-hotels" className="group inline-flex items-center gap-2 transition hover:text-ivory">
-                    {h.name}{h.current && <span className="text-[10px] uppercase tracking-[0.2em] text-gold">· You are here</span>}
-                    <ArrowUpRight size={13} className="opacity-0 transition group-hover:opacity-100" />
-                  </Link>
+                  {h.website ? (
+                    <a href={h.website} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2 transition hover:text-ivory">
+                      {h.name}
+                      <ArrowUpRight size={13} className="opacity-50 transition group-hover:opacity-100" />
+                    </a>
+                  ) : (
+                    <Link to="/our-hotels" className="group inline-flex items-center gap-2 transition hover:text-ivory">
+                      {h.name}{h.current && <span className="text-[10px] uppercase tracking-[0.2em] text-gold">· You are here</span>}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -98,7 +105,10 @@ const Footer = () => (
 
       <div className="mt-16 flex flex-col gap-3 border-t border-ivory/10 pt-8 text-xs tracking-wide md:flex-row md:items-center md:justify-between">
         <p>© {new Date().getFullYear()} {HOTEL.fullName}. All rights reserved.</p>
-        <p className="uppercase tracking-[0.2em]">A member of <span className="text-gold-light">The Ambience Hotels</span></p>
+        <p className="uppercase tracking-[0.2em]">
+          A member of{' '}
+          <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-light link-underline">The Ambience Hotels</a>
+        </p>
       </div>
     </div>
   </footer>

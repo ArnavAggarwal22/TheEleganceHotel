@@ -207,9 +207,17 @@ export const AMENITIES = [
 
 /* ─────────────────────────── The Ambience family ─────────────────────────── */
 
+/** The Ambience Hotel (flagship / parent brand) — official website and map pin. */
+export const AMBIENCE = {
+  website: 'https://www.theambiencehotel.com/',
+  websiteLabel: 'theambiencehotel.com',
+  map: 'https://maps.app.goo.gl/4p6GnqbKE3vBLbHC7',
+};
+
 export const PARENT_BRAND = {
   name: 'The Ambience Hotels',
   short: 'Ambience',
+  website: AMBIENCE.website,
   story:
     'The Ambience began in Zirakpur with a simple promise — genuine Punjabi warmth, spotless rooms and service that remembers your name. The Elegance Hotel is the next chapter of that promise: the same family, the same standards, reimagined with a more refined, contemporary spirit.',
 };
@@ -224,6 +232,7 @@ export interface CollectionHotel {
   highlights: string[];
   phoneDisplay?: string;
   phoneTel?: string;
+  website?: string;
   links?: { label: string; href: string }[];
   current?: boolean;
   comingSoon?: boolean;
@@ -241,12 +250,10 @@ export const COLLECTION: CollectionHotel[] = [
     highlights: ['Super Deluxe & Deluxe Rooms', 'Grand Banquet Hall · 100 guests', 'In-house Restaurant'],
     phoneDisplay: '+91 82880 77631',
     phoneTel: '+918288077631',
+    website: AMBIENCE.website,
     links: [
-      { label: 'Book at The Ambience', href: 'https://theambiencehotel.bookingjini.in/' },
-      {
-        label: 'Get Directions',
-        href: 'https://www.google.com/maps/place/The+Ambience+Hotel/@30.660226,76.8162361,17z/data=!3m1!4b1!4m6!3m5!1s0x390feb0063620adf:0x34bf118209d9d1e!8m2!3d30.660226!4d76.818811',
-      },
+      { label: 'Visit The Ambience', href: AMBIENCE.website },
+      { label: 'Get Directions', href: AMBIENCE.map },
     ],
   },
   {

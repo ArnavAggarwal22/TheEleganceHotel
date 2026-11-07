@@ -1,10 +1,10 @@
-import { Heart, Gem, HandHeart, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Gem, HandHeart, Heart, MapPin, Sparkles } from 'lucide-react';
 import Collection from '@/components/Collection';
 import Img from '@/components/Img';
 import PageHero from '@/components/PageHero';
 import Reveal from '@/components/Reveal';
 import SectionHeading from '@/components/SectionHeading';
-import { AMBIENCE_GALLERY, IMAGES, PARENT_BRAND } from '@/data/hotel';
+import { AMBIENCE, AMBIENCE_GALLERY, IMAGES, PARENT_BRAND } from '@/data/hotel';
 import ambienceLogo from '@/assets/ambience/ambience-logo.png';
 
 const VALUES = [
@@ -28,9 +28,9 @@ const OurHotels = () => (
     <section className="py-24 md:py-32">
       <div className="container grid items-center gap-16 lg:grid-cols-2">
         <Reveal className="relative mx-auto w-full max-w-md">
-          <div className="aspect-square overflow-hidden bg-ink shadow-2xl">
-            <img src={ambienceLogo} alt="The Ambience Hotel crest" className="h-full w-full object-cover" />
-          </div>
+          <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="block aspect-square overflow-hidden bg-ink shadow-2xl" aria-label="Visit The Ambience Hotel website">
+            <img src={ambienceLogo} alt="The Ambience Hotel crest" className="h-full w-full object-cover transition-transform duration-[1.5s] hover:scale-105" />
+          </a>
           <div className="absolute -bottom-6 -right-6 hidden bg-gold px-6 py-5 text-ink sm:block">
             <p className="text-[10px] font-semibold uppercase tracking-luxe">Parent Brand</p>
             <p className="font-display text-2xl">The Ambience Hotels</p>
@@ -41,10 +41,20 @@ const OurHotels = () => (
           <Reveal delay={0.15}>
             <p className="mt-8 text-[15.5px] leading-relaxed text-ink/65">{PARENT_BRAND.story}</p>
             <p className="mt-5 text-[15.5px] leading-relaxed text-ink/65">
-              Whether you stay with us at The Ambience Hotel near Unicity Homes or at The Elegance on the
+              Whether you stay with us at{' '}
+              <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-dark link-underline">The Ambience Hotel</a>{' '}
+              near Unicity Homes or at The Elegance on the
               Ambala–Chandigarh Highway, you'll find the same care in every detail — and the same team ready to
               help with anything you need.
             </p>
+          </Reveal>
+          <Reveal delay={0.2} className="mt-8 flex flex-wrap gap-3">
+            <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="btn-dark">
+              {AMBIENCE.websiteLabel} <ArrowUpRight size={14} />
+            </a>
+            <a href={AMBIENCE.map} target="_blank" rel="noopener noreferrer" className="btn-ghost-dark">
+              <MapPin size={14} /> Find The Ambience
+            </a>
           </Reveal>
           <Reveal delay={0.25} className="mt-10 grid grid-cols-3 gap-3">
             {AMBIENCE_GALLERY.map((g) => (

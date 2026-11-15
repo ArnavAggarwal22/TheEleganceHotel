@@ -7,10 +7,12 @@ import {
 } from 'lucide-react';
 import Reveal, { EASE } from '@/components/Reveal';
 import RoomCard from '@/components/RoomCard';
-import { HOTEL, ROOMS, formatINR } from '@/data/hotel';
+import { HOTEL, formatINR } from '@/data/hotel';
+import { useLiveRooms } from '@/lib/useLiveRooms';
 
 const RoomDetail = () => {
   const { id } = useParams();
+  const ROOMS = useLiveRooms();
   const room = ROOMS.find((r) => r.id === id);
   const [active, setActive] = useState(0);
 

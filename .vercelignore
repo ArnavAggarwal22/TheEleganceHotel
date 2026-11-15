@@ -1,0 +1,8 @@
+# Never uploaded by `vercel deploy` from this computer
+.env*
+!.env.example
+node_modules/
+dist/
+supabase/.temp/
+supabase/.branches/
+client_secret_*.json

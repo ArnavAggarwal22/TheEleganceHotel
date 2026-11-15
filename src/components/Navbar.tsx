@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, Phone, X, MapPin } from 'lucide-react';
+import { Menu, Phone, X, MapPin, User } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import Logo from './Logo';
 import { EASE } from './Reveal';
 import { AMBIENCE, HOTEL } from '@/data/hotel';
@@ -19,6 +20,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { pathname, hash } = useLocation();
+  const { user } = useAuth();
+  const accountHref = user ? '/account' : '/signin';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -104,6 +107,14 @@ const Navbar = () => {
               >
                 <Phone size={16} />
               </a>
+              <Link
+                to={accountHref}
+                aria-label={user ? 'My account' : 'Sign in'}
+                title={user ? 'My account' : 'Sign in'}
+                className="hidden h-11 w-11 items-center justify-center rounded-full border border-ivory/25 text-ivory transition hover:border-gold hover:text-gold-light sm:flex"
+              >
+                {user ? <span className="font-display text-lg leading-none">{(user.full_name || user.email).charAt(0).toUpperCase()}</span> : <User size={16} />}
+              </Link>
               <Link to="/book" className="btn-gold hidden !px-6 !py-3 sm:inline-flex">
                 Book Your Stay
               </Link>
@@ -173,9 +184,14 @@ const Navbar = () => {
                   <a href={`tel:${HOTEL.phoneTel}`} className="font-display text-3xl text-ivory">{HOTEL.phoneDisplay}</a>
                   <p>{HOTEL.addressOneLine}</p>
                 </div>
-                <Link to="/book" onClick={() => setOpen(false)} className="btn-gold self-start">
-                  Book Your Stay
-                </Link>
+                <div className="flex flex-wrap gap-3">
+                  <Link to={accountHref} onClick={() => setOpen(false)} className="btn-ghost-light self-start">
+                    {user ? 'My account' : 'Sign in'}
+                  </Link>
+                  <Link to="/book" onClick={() => setOpen(false)} className="btn-gold self-start">
+                    Book Your Stay
+                  </Link>
+                </div>
               </motion.div>
             </div>
           </motion.div>

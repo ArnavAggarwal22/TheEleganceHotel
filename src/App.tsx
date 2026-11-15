@@ -15,6 +15,10 @@ import Booking from '@/pages/Booking';
 import Gallery from '@/pages/Gallery';
 import OurHotels from '@/pages/OurHotels';
 import NotFound from '@/pages/NotFound';
+import SignIn from '@/pages/SignIn';
+import Account from '@/pages/Account';
+import { CancellationPolicy, PrivacyPolicy, TermsOfStay } from '@/pages/Policies';
+import AdminApp from '@/admin/AdminApp';
 
 /** Scrolls to #hash targets (e.g. /#dining) once they exist on the page. */
 const HashScroller = () => {
@@ -40,7 +44,14 @@ const TITLES: Record<string, string> = {
   '/book': 'Book Your Stay | The Elegance Hotel by Ambience',
   '/gallery': 'Gallery | The Elegance Hotel by Ambience',
   '/our-hotels': 'Our Hotels | The Ambience Hotels',
+  '/signin': 'Sign in | The Elegance Hotel by Ambience',
+  '/account': 'My Account | The Elegance Hotel by Ambience',
+  '/privacy': 'Privacy Policy | The Elegance Hotel by Ambience',
+  '/terms': 'Terms of Stay | The Elegance Hotel by Ambience',
+  '/cancellation-policy': 'Cancellation & Refunds | The Elegance Hotel by Ambience',
 };
+
+const PUBLIC_PAGES = ['/', '/rooms', '/book', '/gallery', '/our-hotels', '/signin', '/account', '/privacy', '/terms', '/cancellation-policy'];
 
 const Page = ({ children }: { children: React.ReactNode }) => (
   <motion.main
@@ -66,7 +77,18 @@ export default function App() {
     document.title = TITLES[location.pathname] ?? (location.pathname.startsWith('/rooms/') ? 'Room Details | The Elegance Hotel by Ambience' : TITLES['/']);
   }, [location.pathname]);
 
-  const bare = !['/', '/rooms', '/book', '/gallery', '/our-hotels'].includes(location.pathname) && !location.pathname.startsWith('/rooms/');
+  const isAdmin = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
+  const bare = isAdmin || (!PUBLIC_PAGES.includes(location.pathname) && !location.pathname.startsWith('/rooms/'));
+
+  // The admin dashboard is a separate screen with its own layout (reach it by typing /admin)
+  if (isAdmin) {
+    return (
+      <>
+        <AdminApp />
+        <Toaster position="top-center" />
+      </>
+    );
+  }
 
   return (
     <>
@@ -81,6 +103,11 @@ export default function App() {
           <Route path="/book" element={<Page><Booking /></Page>} />
           <Route path="/gallery" element={<Page><Gallery /></Page>} />
           <Route path="/our-hotels" element={<Page><OurHotels /></Page>} />
+          <Route path="/signin" element={<Page><SignIn /></Page>} />
+          <Route path="/account" element={<Page><Account /></Page>} />
+          <Route path="/privacy" element={<Page><PrivacyPolicy /></Page>} />
+          <Route path="/terms" element={<Page><TermsOfStay /></Page>} />
+          <Route path="/cancellation-policy" element={<Page><CancellationPolicy /></Page>} />
           <Route path="*" element={<Page><NotFound /></Page>} />
         </Routes>
       </AnimatePresence>

@@ -3,9 +3,12 @@ import { ArrowRight, BedDouble, Check, Eye, Maximize2, Users } from 'lucide-reac
 import Img from '@/components/Img';
 import PageHero from '@/components/PageHero';
 import Reveal from '@/components/Reveal';
-import { HOTEL, IMAGES, ROOMS, formatINR } from '@/data/hotel';
+import { HOTEL, IMAGES, formatINR } from '@/data/hotel';
+import { useLiveRooms } from '@/lib/useLiveRooms';
 
-const Rooms = () => (
+const Rooms = () => {
+  const ROOMS = useLiveRooms();
+  return (
   <>
     <PageHero
       image={IMAGES.pageRooms}
@@ -58,6 +61,7 @@ const Rooms = () => (
       </div>
     </section>
   </>
-);
+  );
+};
 
 export default Rooms;

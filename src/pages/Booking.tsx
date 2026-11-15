@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -9,7 +9,13 @@ import { toast } from 'sonner';
 import Img from '@/components/Img';
 import PageHero from '@/components/PageHero';
 import { EASE } from '@/components/Reveal';
-import { HOTEL, IMAGES, ROOMS, formatINR, whatsappLink } from '@/data/hotel';
+import { HOTEL, IMAGES, formatINR, whatsappLink } from '@/data/hotel';
+import PhoneInput from '@/components/PhoneInput';
+import { useAuth } from '@/context/AuthContext';
+import { fetchAvailability, requestBooking } from '@/lib/db';
+import { isValidPhone, PHONE_ERROR, PHONE_REQUIRED } from '@/lib/phone';
+import { supabase } from '@/lib/supabase';
+import { gstRateFor, useLiveRooms } from '@/lib/useLiveRooms';
 import { addDays, nightsBetween, prettyDate, today } from '@/lib/dates';
 
 const STEPS = ['Your Stay', 'Choose Room', 'Guest Details', 'Confirm'];
@@ -26,6 +32,8 @@ const Counter = ({ value, onChange, min, max, label }: { value: number; onChange
 
 const Booking = () => {
   const [params] = useSearchParams();
+  const ROOMS = useLiveRooms();
+  const { user } = useAuth();
   const initialIn = params.get('in') && params.get('in')! >= today() ? params.get('in')! : today();
   const initialOut = params.get('out') && params.get('out')! > initialIn ? params.get('out')! : addDays(initialIn, 1);
 
@@ -34,21 +42,42 @@ const Booking = () => {
   const [checkOut, setCheckOut] = useState(initialOut);
   const [guests, setGuests] = useState(Math.min(12, Math.max(1, Number(params.get('guests')) || 2)));
   const [rooms, setRooms] = useState(1);
-  const [roomId, setRoomId] = useState<string | null>(ROOMS.some((r) => r.id === params.get('room')) ? params.get('room') : null);
+  const [roomId, setRoomId] = useState<string | null>(params.get('room'));
   const [guest, setGuest] = useState({ name: '', phone: '', email: '', arrival: '', requests: '' });
   const [done, setDone] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+  const [left, setLeft] = useState<Record<string, number>>({});
 
   const room = ROOMS.find((r) => r.id === roomId) ?? null;
   const nights = nightsBetween(checkIn, checkOut);
   const subtotal = room ? room.price * nights * rooms : 0;
-  const gst = Math.round(subtotal * HOTEL.gstRate);
+  const gstRate = room ? gstRateFor(room.price) : HOTEL.gstRate;
+  const gst = Math.round(subtotal * gstRate);
   const total = subtotal + gst;
+
+  // Signed-in guests: fill in what we know
+  useEffect(() => {
+    if (!user) return;
+    setGuest((g) => ({ ...g, name: g.name || user.full_name, phone: g.phone || user.phone || '', email: g.email || user.email }));
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Rooms left for the chosen dates (from the hotel's live inventory)
+  useEffect(() => {
+    if (!supabase || nights <= 0) return;
+    let active = true;
+    fetchAvailability(checkIn, checkOut)
+      .then((rows) => active && setLeft(Object.fromEntries(rows.map((r) => [r.room_type_id, r.rooms_left]))))
+      .catch(() => active && setLeft({}));
+    return () => {
+      active = false;
+    };
+  }, [checkIn, checkOut, nights]);
   const roomsNeeded = (r: (typeof ROOMS)[number]) => Math.ceil(guests / r.maxGuests);
 
   const canNext = useMemo(() => {
     if (step === 0) return nights > 0;
     if (step === 1) return !!room && roomsNeeded(room) <= rooms;
-    if (step === 2) return guest.name.trim().length > 1 && /^[0-9+\s-]{10,15}$/.test(guest.phone.trim());
+    if (step === 2) return guest.name.trim().length > 1 && isValidPhone(guest.phone);
     return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, nights, room, rooms, guests, guest]);
@@ -58,7 +87,7 @@ const Booking = () => {
       toast.error(
         step === 0 ? 'Please choose valid check-in and check-out dates.'
           : step === 1 ? (room ? `This room needs ${roomsNeeded(room)} rooms for ${guests} guests — increase rooms or pick another.` : 'Please select a room.')
-          : 'Please enter your name and a valid phone number.',
+          : guest.name.trim().length < 2 ? 'Please enter your name.' : guest.phone ? PHONE_ERROR : PHONE_REQUIRED,
       );
       return;
     }
@@ -71,20 +100,18 @@ const Booking = () => {
     if (checkOut <= v) setCheckOut(addDays(v, 1));
   };
 
-  const confirm = () => {
-    if (!room) return;
-    const ref = 'EL' + Date.now().toString(36).toUpperCase().slice(-6);
-    const msg = [
+  const whatsappMessage = (ref: string) =>
+    [
       `*New Booking Request — ${HOTEL.fullName}*`,
       `Ref: ${ref}`,
       '',
-      `Room: ${room.name} × ${rooms}`,
+      `Room: ${room?.name ?? ""} × ${rooms}`,
       `Check-in: ${prettyDate(checkIn)}`,
       `Check-out: ${prettyDate(checkOut)}`,
       `Nights: ${nights} · Guests: ${guests}`,
       '',
       `Room charges: ${formatINR(subtotal)}`,
-      `GST (${Math.round(HOTEL.gstRate * 100)}%): ${formatINR(gst)}`,
+      `GST (${Math.round(gstRate * 100)}%): ${formatINR(gst)}`,
       `*Estimated total: ${formatINR(total)}*`,
       '',
       `Name: ${guest.name}`,
@@ -93,8 +120,57 @@ const Booking = () => {
       guest.arrival && `Expected arrival: ${guest.arrival}`,
       guest.requests && `Requests: ${guest.requests}`,
     ].filter(Boolean).join('\n');
-    window.open(whatsappLink(msg), '_blank', 'noopener');
-    setDone(ref);
+
+  const openWhatsApp = (ref: string, popup?: Window | null) => {
+    const url = whatsappLink(whatsappMessage(ref));
+    if (popup) popup.location.href = url;
+    else window.open(url, '_blank', 'noopener');
+  };
+
+  /** Saves the request (reference, emails to hotel and guest), then hands over to WhatsApp. */
+  const confirm = async () => {
+    if (!room || sending) return;
+    if (!supabase) {
+      const ref = 'EL' + Date.now().toString(36).toUpperCase().slice(-6);
+      openWhatsApp(ref);
+      setDone(ref);
+      return;
+    }
+    // Open the tab now, while the click still counts as the guest's action (popup blockers)
+    const popup = window.open('about:blank', '_blank');
+    if (popup) popup.opener = null;
+    setSending(true);
+    try {
+      const { reference } = await requestBooking({
+        roomTypeId: room.id,
+        checkIn,
+        checkOut,
+        rooms,
+        adults: guests,
+        children: 0,
+        name: guest.name.trim(),
+        phone: guest.phone,
+        email: guest.email.trim(),
+        arrival: guest.arrival,
+        requests: guest.requests.trim(),
+      });
+      openWhatsApp(reference, popup);
+      setDone(reference);
+    } catch (error) {
+      const err = error as Error & { code?: string };
+      if (err.code === '22023') {
+        popup?.close();
+        toast.error(err.message);
+        return;
+      }
+      // Couldn't save (offline or busy): WhatsApp still gets the full request
+      toast.warning("We couldn't save your request online, so it will go by WhatsApp only.");
+      const ref = 'EL' + Date.now().toString(36).toUpperCase().slice(-6);
+      openWhatsApp(ref, popup);
+      setDone(ref);
+    } finally {
+      setSending(false);
+    }
   };
 
   const summary = (
@@ -118,7 +194,7 @@ const Booking = () => {
         {room && (
           <>
             <div className="flex justify-between text-ivory/70"><span>{formatINR(room.price)} × {nights} night{nights === 1 ? '' : 's'} × {rooms}</span><span>{formatINR(subtotal)}</span></div>
-            <div className="flex justify-between text-ivory/70"><span>GST ({Math.round(HOTEL.gstRate * 100)}%)</span><span>{formatINR(gst)}</span></div>
+            <div className="flex justify-between text-ivory/70"><span>GST ({Math.round(gstRate * 100)}%)</span><span>{formatINR(gst)}</span></div>
             <div className="flex items-end justify-between border-t border-ivory/10 pt-4">
               <span className="text-[10px] uppercase tracking-[0.22em] text-gold">Estimated total</span>
               <span className="font-display text-4xl">{formatINR(total)}</span>
@@ -148,11 +224,12 @@ const Booking = () => {
               <p className="mt-6 eyebrow center">Request ref · {done}</p>
               <h2 className="mt-5 text-5xl sm:text-6xl">Thank you, {guest.name.split(' ')[0]}.</h2>
               <p className="mx-auto mt-6 max-w-lg text-[15.5px] leading-relaxed text-ink/60">
-                Your booking request has been prepared in WhatsApp — just press send. Our reservations team will confirm
-                availability and your final rate shortly. If WhatsApp didn't open, call us directly.
+                Your request is saved with our reservations team{guest.email ? ` and a copy is on its way to ${guest.email}` : ''}.
+                WhatsApp has opened with the details: press send for the quickest reply. We'll confirm availability and
+                your final rate shortly. If WhatsApp didn't open, call us directly.
               </p>
               <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-                <button onClick={confirm} className="btn-dark"><MessageCircle size={15} /> Open WhatsApp Again</button>
+                <button onClick={() => openWhatsApp(done)} className="btn-dark"><MessageCircle size={15} /> Open WhatsApp Again</button>
                 <a href={`tel:${HOTEL.phoneTel}`} className="btn-ghost-dark"><Phone size={14} /> {HOTEL.phoneDisplay}</a>
               </div>
               <Link to="/" className="mt-10 inline-block text-[11px] uppercase tracking-[0.22em] text-ink/50 link-underline">Back to home</Link>
@@ -247,6 +324,15 @@ const Booking = () => {
                                       <p className="font-display text-3xl">{formatINR(r.price)}<span className="font-sans text-xs text-ink/40"> / night</span></p>
                                     </div>
                                     {need > 1 && <p className="text-xs text-gold-dark">{need} rooms needed for {guests} guests</p>}
+                                    {left[r.id] !== undefined && (
+                                      <p className={`text-xs font-semibold ${left[r.id] === 0 ? 'text-red-700' : left[r.id] <= 2 ? 'text-gold-dark' : 'text-ink/45'}`}>
+                                        {left[r.id] === 0
+                                          ? 'Sold out for these dates. Send a request and we will offer alternatives.'
+                                          : left[r.id] <= 2
+                                            ? `Only ${left[r.id]} left for these dates`
+                                            : 'Available for these dates'}
+                                      </p>
+                                    )}
                                   </div>
                                 </button>
                               );
@@ -264,8 +350,8 @@ const Booking = () => {
                               <input id="g-name" className="field" value={guest.name} onChange={(e) => setGuest({ ...guest, name: e.target.value })} placeholder="As on your ID" autoComplete="name" />
                             </div>
                             <div>
-                              <label className="field-label" htmlFor="g-phone">Mobile number *</label>
-                              <input id="g-phone" type="tel" className="field" value={guest.phone} onChange={(e) => setGuest({ ...guest, phone: e.target.value })} placeholder="10-digit mobile" autoComplete="tel" />
+                              <label className="field-label" htmlFor="g-phone">Phone number *</label>
+                              <PhoneInput id="g-phone" value={guest.phone} onChange={(phone) => setGuest({ ...guest, phone })} required />
                             </div>
                             <div>
                               <label className="field-label" htmlFor="g-email">Email (optional)</label>
@@ -303,7 +389,7 @@ const Booking = () => {
                           </div>
                           <div className="mt-8 flex items-start gap-4 bg-ivory-200 p-6 text-sm text-ink/60">
                             <MessageCircle size={20} className="mt-0.5 shrink-0 text-gold-dark" />
-                            <p>When you confirm, WhatsApp opens with your booking details ready to send to our reservations desk ({HOTEL.phoneDisplay}). We'll confirm availability and your final rate — no payment is taken online.</p>
+                            <p>When you confirm, your request is saved with our reservations desk{guest.email ? ' and emailed to you' : ''}, and WhatsApp opens with the details ready to send to {HOTEL.phoneDisplay}. We'll confirm availability and your final rate. No payment is taken online. By sending a request you agree to our <Link to="/terms" className="underline">terms</Link> and <Link to="/cancellation-policy" className="underline">cancellation policy</Link>.</p>
                           </div>
                         </div>
                       )}
@@ -320,7 +406,7 @@ const Booking = () => {
                     {step < 3 ? (
                       <button type="button" onClick={next} className={`btn-dark ${canNext ? '' : 'opacity-60'}`}>Continue <ArrowRight size={15} /></button>
                     ) : (
-                      <button type="button" onClick={confirm} className="btn-gold"><MessageCircle size={15} /> Confirm via WhatsApp</button>
+                      <button type="button" onClick={() => void confirm()} disabled={sending} className="btn-gold disabled:opacity-60"><MessageCircle size={15} /> {sending ? 'Sending…' : 'Confirm booking request'}</button>
                     )}
                   </div>
                 </div>

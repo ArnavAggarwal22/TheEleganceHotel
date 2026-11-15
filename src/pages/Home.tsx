@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import {
-  ArrowRight, ArrowUpRight, BriefcaseBusiness, Car, ConciergeBell, MapPin, MessageCircle, Navigation,
+  ArrowRight, ArrowUpRight, BriefcaseBusiness, Car, CheckCircle2, ConciergeBell, MapPin, MessageCircle, Navigation,
   Phone, Plane, Quote, ShieldCheck, Sparkles, UtensilsCrossed, Wifi, type LucideIcon,
 } from 'lucide-react';
 import BookingBar from '@/components/BookingBar';
@@ -10,10 +10,16 @@ import Collection from '@/components/Collection';
 import Img from '@/components/Img';
 import Reveal, { EASE } from '@/components/Reveal';
 import { introDelay } from '@/lib/intro';
+import { useLiveRooms } from '@/lib/useLiveRooms';
+import { toast } from 'sonner';
+import PhoneInput from '@/components/PhoneInput';
+import { submitEnquiry, type EnquiryKind } from '@/lib/db';
+import { isValidPhone, PHONE_ERROR, PHONE_REQUIRED } from '@/lib/phone';
+import { hasBackend } from '@/lib/supabase';
 import RoomCard from '@/components/RoomCard';
 import SectionHeading from '@/components/SectionHeading';
 import {
-  AMBIENCE, AMENITIES, COLLECTION, GALLERY, HOTEL, IMAGES, NEARBY, ROOMS, TESTIMONIALS, TRAVEL_TIMES,
+  AMBIENCE, AMENITIES, COLLECTION, GALLERY, HOTEL, IMAGES, NEARBY, TESTIMONIALS, TRAVEL_TIMES,
   mapsEmbedUrl, mapsLink, whatsappLink,
 } from '@/data/hotel';
 
@@ -249,7 +255,9 @@ const Marquee = () => {
 
 /* ───────────────────────────── Rooms ───────────────────────────── */
 
-const Rooms = () => (
+const Rooms = () => {
+  const ROOMS = useLiveRooms();
+  return (
   <section id="rooms" className="py-24 md:py-32">
     <div className="container">
       <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
@@ -267,7 +275,8 @@ const Rooms = () => (
       </div>
     </div>
   </section>
-);
+  );
+};
 
 /* ───────────────────────────── Experiences ───────────────────────────── */
 
@@ -450,12 +459,37 @@ const Testimonials = () => {
 /* ───────────────────────────── Location & contact ───────────────────────────── */
 
 const Contact = () => {
-  const [form, setForm] = useState({ name: '', phone: '', message: '' });
+  const [form, setForm] = useState({ kind: 'contact' as EnquiryKind, name: '', phone: '', email: '', message: '' });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const send = (e: React.FormEvent) => {
-    e.preventDefault();
+  const viaWhatsApp = () => {
     const text = `Hello ${HOTEL.fullName},\n\nName: ${form.name}\nPhone: ${form.phone}\n\n${form.message}`;
     window.open(whatsappLink(text), '_blank', 'noopener');
+  };
+
+  /** Saves the message for the team (with an email alert); WhatsApp if the site has no database. */
+  const send = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (form.name.trim().length < 2) return toast.error('Please enter your name.');
+    if (!form.phone) return toast.error(PHONE_REQUIRED);
+    if (!isValidPhone(form.phone)) return toast.error(PHONE_ERROR);
+    if (form.message.trim().length < 3) return toast.error('Please write your message.');
+    if (!hasBackend) return viaWhatsApp();
+    setSending(true);
+    try {
+      await submitEnquiry({ kind: form.kind, name: form.name.trim(), phone: form.phone, email: form.email.trim(), message: form.message.trim() });
+      setSent(true);
+    } catch (error) {
+      const err = error as Error & { code?: string };
+      if (err.code === '22023' || err.code === 'P0001') toast.error(err.message);
+      else {
+        toast.warning("We couldn't send it online, so WhatsApp is opening instead.");
+        viaWhatsApp();
+      }
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -525,29 +559,57 @@ const Contact = () => {
             <p className="eyebrow">Write to us</p>
             <h3 className="mt-4 text-4xl leading-tight">Have a question or special request?</h3>
             <p className="mt-4 text-sm leading-relaxed text-ink/55">
-              Send us a note and our reservations team will reply on WhatsApp — usually within minutes.
+              Send us a note and our reservations team will call or WhatsApp you back shortly. Planning an event or a
+              corporate stay? Choose it below.
             </p>
           </div>
-          <form onSubmit={send} className="grid gap-4 sm:grid-cols-2 lg:col-span-8">
-            <div>
-              <label className="field-label" htmlFor="c-name">Your name</label>
-              <input id="c-name" className="field" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Full name" />
+          {sent ? (
+            <div className="flex flex-col items-start justify-center gap-4 lg:col-span-8">
+              <CheckCircle2 size={44} strokeWidth={1.2} className="text-gold" />
+              <h3 className="text-4xl">Thank you, {form.name.split(' ')[0]}.</h3>
+              <p className="text-sm text-ink/60">We've received your message and will get back to you on {form.phone} shortly.</p>
+              <button type="button" onClick={() => { setSent(false); setForm({ ...form, message: '' }); }} className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-dark link-underline">Send another message</button>
+            </div>
+          ) : (
+          <form onSubmit={(e) => void send(e)} noValidate className="grid gap-4 sm:grid-cols-2 lg:col-span-8">
+            <div className="sm:col-span-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Type of enquiry">
+              {([['contact', 'General question'], ['event', 'Event or banquet'], ['corporate', 'Corporate stay']] as const).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={form.kind === value}
+                  onClick={() => setForm({ ...form, kind: value })}
+                  className={`border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition ${form.kind === value ? 'border-ink bg-ink text-ivory' : 'border-ink/15 text-ink/60 hover:border-ink'}`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
             <div>
-              <label className="field-label" htmlFor="c-phone">Phone</label>
-              <input id="c-phone" className="field" required type="tel" pattern="[0-9+\s-]{10,15}" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="10-digit mobile" />
+              <label className="field-label" htmlFor="c-name">Your name</label>
+              <input id="c-name" className="field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Full name" autoComplete="name" />
+            </div>
+            <div>
+              <label className="field-label" htmlFor="c-phone">Phone number</label>
+              <PhoneInput id="c-phone" value={form.phone} onChange={(phone) => setForm({ ...form, phone })} required />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="field-label" htmlFor="c-email">Email (optional)</label>
+              <input id="c-email" type="email" className="field" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" autoComplete="email" />
             </div>
             <div className="sm:col-span-2">
               <label className="field-label" htmlFor="c-msg">Message</label>
-              <textarea id="c-msg" className="field resize-none" rows={4} required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Dates, number of guests, any special requests…" />
+              <textarea id="c-msg" className="field resize-none" rows={4} maxLength={4000} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Dates, number of guests, any special requests…" />
             </div>
             <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
               <a href={`tel:${HOTEL.phoneTel}`} className="inline-flex items-center gap-2 text-sm text-ink/60 transition hover:text-gold-dark">
                 <Phone size={14} /> Prefer to talk? Call {HOTEL.phoneDisplay}
               </a>
-              <button type="submit" className="btn-dark"><MessageCircle size={15} /> Send via WhatsApp</button>
+              <button type="submit" disabled={sending} className="btn-dark disabled:opacity-60"><MessageCircle size={15} /> {sending ? 'Sending…' : 'Send message'}</button>
             </div>
           </form>
+          )}
         </Reveal>
       </div>
     </section>

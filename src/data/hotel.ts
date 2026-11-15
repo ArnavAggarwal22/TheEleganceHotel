@@ -28,6 +28,7 @@ export const HOTEL = {
   byline: 'by Ambience',
   fullName: 'The Elegance Hotel by Ambience',
   tagline: 'Where every stay is composed with grace',
+  email: 'theelegancehotelchd@gmail.com',
   phoneDisplay: '+91 81468 30484',
   phoneTel: '+918146830484',
   whatsapp: '918146830484',

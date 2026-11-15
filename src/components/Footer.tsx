@@ -107,7 +107,13 @@ const Footer = () => (
       </div>
 
       <div className="mt-16 flex flex-col gap-3 border-t border-ivory/10 pt-8 text-xs tracking-wide md:flex-row md:items-center md:justify-between">
-        <p>© {new Date().getFullYear()} {HOTEL.fullName}. All rights reserved.</p>
+        <p>
+          © {new Date().getFullYear()} {HOTEL.fullName}. All rights reserved. ·{' '}
+          <Link to="/privacy" className="link-underline hover:text-ivory">Privacy</Link> ·{' '}
+          <Link to="/terms" className="link-underline hover:text-ivory">Terms of Stay</Link> ·{' '}
+          <Link to="/cancellation-policy" className="link-underline hover:text-ivory">Cancellation &amp; Refunds</Link> ·{' '}
+          <a href={`mailto:${HOTEL.email}`} className="link-underline hover:text-ivory">{HOTEL.email}</a>
+        </p>
         <p className="uppercase tracking-[0.2em]">
           A member of{' '}
           <a href={AMBIENCE.website} target="_blank" rel="noopener noreferrer" className="text-gold-light link-underline">The Ambience Hotels</a>

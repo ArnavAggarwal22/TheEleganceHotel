@@ -3,3 +3,10 @@ dist
 .env
 .env.*
 *.tsbuildinfo
+
+# Supabase local state and secrets
+supabase/.temp/
+supabase/.branches/
+.vercel
+client_secret_*.json
+!.env.example

@@ -171,7 +171,7 @@ const Intro = () => {
   const ySmall = useTransform(scrollYProgress, [0, 1], [140, -120]);
 
   const stats = [
-    { value: '3', label: 'Room categories' },
+    { value: '16', label: 'Elegant rooms' },
     { value: '24×7', label: 'Front desk & care' },
     { value: '≈20', label: 'Minutes to the airport' },
   ];
@@ -262,15 +262,15 @@ const Rooms = () => {
     <div className="container">
       <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
         <SectionHeading
-          eyebrow="Rooms & Suites"
+          eyebrow="Our Rooms"
           title={<>Spaces made for <em className="italic text-gold-dark">slow</em> mornings</>}
-          intro="Three thoughtfully designed categories — each with plush bedding, fast Wi-Fi, rain showers and the quiet comfort The Ambience is known for."
+          intro="Two thoughtfully designed categories, 13 Deluxe and 3 Super Deluxe rooms, each with plush bedding, fast Wi-Fi and the quiet comfort The Ambience is known for."
         />
         <Reveal delay={0.2}>
           <Link to="/rooms" className="btn-ghost-dark shrink-0">View All Rooms <ArrowRight size={15} /></Link>
         </Reveal>
       </div>
-      <div className="mt-16 grid gap-10 md:grid-cols-3 md:gap-6 lg:gap-8">
+      <div className="mx-auto mt-16 grid max-w-5xl gap-10 md:grid-cols-2 md:gap-6 lg:gap-8">
         {ROOMS.map((r, i) => <RoomCard key={r.id} room={r} index={i} />)}
       </div>
     </div>

@@ -40,7 +40,7 @@ const HashScroller = () => {
 
 const TITLES: Record<string, string> = {
   '/': 'The Elegance Hotel by Ambience | Luxury Stay in Zirakpur',
-  '/rooms': 'Rooms & Suites | The Elegance Hotel by Ambience',
+  '/rooms': 'Rooms | The Elegance Hotel by Ambience',
   '/book': 'Book Your Stay | The Elegance Hotel by Ambience',
   '/gallery': 'Gallery | The Elegance Hotel by Ambience',
   '/our-hotels': 'Our Hotels | The Ambience Hotels',

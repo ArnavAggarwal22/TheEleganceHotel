@@ -12,10 +12,10 @@ const Rooms = () => {
   <>
     <PageHero
       image={IMAGES.pageRooms}
-      crumb="Rooms & Suites"
+      crumb="Rooms"
       eyebrow="Stay at The Elegance Hotel"
-      title={<>Rooms &amp; <em className="italic text-gold-light">Suites</em></>}
-      intro="Three categories of calm, carefully finished rooms — each designed for deep sleep, easy work and unhurried mornings."
+      title={<>Our <em className="italic text-gold-light">Rooms</em></>}
+      intro="Two categories of calm, carefully finished rooms, 13 Deluxe and 3 Super Deluxe, each designed for deep sleep, easy work and unhurried mornings."
     />
 
     <section className="py-24 md:py-32">

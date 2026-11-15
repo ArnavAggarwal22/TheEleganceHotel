@@ -55,7 +55,7 @@ const Footer = () => (
         <div className="lg:col-span-2">
           <h4 className="mb-5 font-sans text-[10px] font-semibold uppercase tracking-luxe text-gold">Explore</h4>
           <ul className="space-y-3 text-sm">
-            {[['Home', '/'], ['Rooms & Suites', '/rooms'], ['Dining', '/#dining'], ['Gallery', '/gallery'], ['Book a Stay', '/book']].map(([l, to]) => (
+            {[['Home', '/'], ['Rooms', '/rooms'], ['Dining', '/#dining'], ['Gallery', '/gallery'], ['Book a Stay', '/book']].map(([l, to]) => (
               <li key={l}><Link to={to} className="link-underline transition hover:text-ivory">{l}</Link></li>
             ))}
           </ul>

@@ -31,8 +31,11 @@ select is(
   0,
   'Row level security is on for every table'
 );
-select is((select count(*)::int from public.room_types where id in ('deluxe', 'premium', 'elegance-suite')), 3,
-  'The seed adds the three room types');
+select results_eq(
+  $$ select id, total_rooms from public.room_types where id in ('deluxe', 'super-deluxe') order by sort_order $$,
+  $$ values ('deluxe', 13), ('super-deluxe', 3) $$,
+  'The seed adds 13 Deluxe and 3 Super Deluxe rooms'
+);
 select results_eq(
   $$ select full_name, phone, role from public.profiles where id = 'aaaaaaaa-0000-0000-0000-000000000002' $$,
   $$ values ('Meera Guest', '+919876511111', 'guest') $$,

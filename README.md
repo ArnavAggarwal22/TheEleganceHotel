@@ -26,7 +26,7 @@ Deploys to Vercel as-is (`vercel.json` rewrites all routes to `index.html`).
 | Route | What it is |
 | --- | --- |
 | `/` | Home — hero + availability search, about, rooms, amenities, dining, **The Ambience Collection**, gallery, guest reviews, map & contact |
-| `/rooms`, `/rooms/:id` | Rooms & suites, room detail with photo gallery |
+| `/rooms`, `/rooms/:id` | Deluxe (13) and Super Deluxe (3) rooms, room detail with photo gallery |
 | `/book` | 4-step booking flow (dates → room → guest → review) with GST; sends the request to the hotel's WhatsApp |
 | `/gallery` | Filterable gallery with lightbox |
 | `/our-hotels` | The Ambience Hotels family — brand story, flagship + all properties |

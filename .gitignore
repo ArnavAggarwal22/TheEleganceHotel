@@ -10,3 +10,6 @@ supabase/.branches/
 .vercel
 client_secret_*.json
 !.env.example
+
+.vercel
+.env*

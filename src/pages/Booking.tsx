@@ -15,7 +15,7 @@ import { useAuth } from '@/context/AuthContext';
 import { fetchAvailability, requestBooking } from '@/lib/db';
 import { isValidPhone, PHONE_ERROR, PHONE_REQUIRED } from '@/lib/phone';
 import { supabase } from '@/lib/supabase';
-import { gstRateFor, useLiveRooms } from '@/lib/useLiveRooms';
+import { gstRateFor, priceText, useLiveRooms } from '@/lib/useLiveRooms';
 import { addDays, nightsBetween, prettyDate, today } from '@/lib/dates';
 
 const STEPS = ['Your Stay', 'Choose Room', 'Guest Details', 'Confirm'];
@@ -54,6 +54,8 @@ const Booking = () => {
   const gstRate = room ? gstRateFor(room.price) : HOTEL.gstRate;
   const gst = Math.round(subtotal * gstRate);
   const total = subtotal + gst;
+  // Never show totals from the old default price while the live price is loading
+  const money = (n: number) => (room && room.priceKnown === false ? '₹ …' : formatINR(n));
 
   // Signed-in guests: fill in what we know
   useEffect(() => {
@@ -76,7 +78,7 @@ const Booking = () => {
 
   const canNext = useMemo(() => {
     if (step === 0) return nights > 0;
-    if (step === 1) return !!room && roomsNeeded(room) <= rooms;
+    if (step === 1) return !!room && room.priceKnown !== false && roomsNeeded(room) <= rooms;
     if (step === 2) return guest.name.trim().length > 1 && isValidPhone(guest.phone);
     return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -193,11 +195,11 @@ const Booking = () => {
         <div className="flex justify-between text-ivory/70"><span>Nights</span><span>{nights}</span></div>
         {room && (
           <>
-            <div className="flex justify-between text-ivory/70"><span>{formatINR(room.price)} × {nights} night{nights === 1 ? '' : 's'} × {rooms}</span><span>{formatINR(subtotal)}</span></div>
-            <div className="flex justify-between text-ivory/70"><span>GST ({Math.round(gstRate * 100)}%)</span><span>{formatINR(gst)}</span></div>
+            <div className="flex justify-between text-ivory/70"><span>{priceText(room)} × {nights} night{nights === 1 ? '' : 's'} × {rooms}</span><span>{money(subtotal)}</span></div>
+            <div className="flex justify-between text-ivory/70"><span>GST ({Math.round(gstRate * 100)}%)</span><span>{money(gst)}</span></div>
             <div className="flex items-end justify-between border-t border-ivory/10 pt-4">
               <span className="text-[10px] uppercase tracking-[0.22em] text-gold">Estimated total</span>
-              <span className="font-display text-4xl">{formatINR(total)}</span>
+              <span className="font-display text-4xl">{money(total)}</span>
             </div>
           </>
         )}
@@ -321,7 +323,7 @@ const Booking = () => {
                                       <div className="flex flex-wrap gap-2">
                                         {r.highlights.slice(0, 3).map((h) => <span key={h} className="bg-ivory-200 px-2.5 py-1 text-[11px] text-ink/60">{h}</span>)}
                                       </div>
-                                      <p className="font-display text-3xl">{formatINR(r.price)}<span className="font-sans text-xs text-ink/40"> / night</span></p>
+                                      <p className="font-display text-3xl">{priceText(r)}<span className="font-sans text-xs text-ink/40"> / night</span></p>
                                     </div>
                                     {need > 1 && <p className="text-xs text-gold-dark">{need} rooms needed for {guests} guests</p>}
                                     {left[r.id] !== undefined && (

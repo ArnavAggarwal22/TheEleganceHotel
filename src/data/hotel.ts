@@ -3,7 +3,10 @@
  *  THE ELEGANCE HOTEL BY AMBIENCE — site content
  *  Every piece of text, price and photo on the website comes from this file.
  *
- *  NOTE: Room names, prices, sizes and the Elegance photos below are
+ *  Prices and guests per room shown on the live site come from the database
+ *  (/admin → Rooms & prices); the numbers below are only used without a database.
+ *
+ *  NOTE: Room names, sizes and the Elegance photos below are
  *  starting placeholders (stock photography). Replace them with the real
  *  property details/photos before going live. To use your own photos, drop
  *  them into src/assets/elegance/ and import them here, e.g.
@@ -90,6 +93,8 @@ export interface Room {
   gallery: string[];
   highlights: string[];
   amenities: string[];
+  /** false while the live price from the database is still loading (see useLiveRooms) */
+  priceKnown?: boolean;
 }
 
 export const ROOMS: Room[] = [
@@ -99,7 +104,7 @@ export const ROOMS: Room[] = [
     short: 'Quiet, considered comfort for the modern traveller.',
     description:
       'Our Deluxe Room pairs soft neutral tones with warm brass accents to create a calm retreat from the highway bustle. A plush queen bed, a dedicated work corner and a refreshing rain shower make it ideal for business trips and short city breaks alike.',
-    price: 2999,
+    price: 1199,
     size: '180 sq ft',
     maxGuests: 2,
     bed: 'Queen Bed',
@@ -130,9 +135,9 @@ export const ROOMS: Room[] = [
     short: 'More space, a king bed and finer finishing touches.',
     description:
       'Generously proportioned and elegantly layered, the Super Deluxe Room features a king-size bed dressed in fine linen, a seating corner for slow mornings and a refined bathroom. Thoughtful lighting and blackout drapes ensure restful nights, making it perfect for couples, families and longer stays.',
-    price: 3499,
+    price: 1499,
     size: '220 sq ft',
-    maxGuests: 3,
+    maxGuests: 2,
     bed: 'King Bed',
     view: 'Highway View',
     image: u('1590490360182-c33d57733427', 1400),

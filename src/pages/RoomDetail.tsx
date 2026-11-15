@@ -7,8 +7,8 @@ import {
 } from 'lucide-react';
 import Reveal, { EASE } from '@/components/Reveal';
 import RoomCard from '@/components/RoomCard';
-import { HOTEL, formatINR } from '@/data/hotel';
-import { useLiveRooms } from '@/lib/useLiveRooms';
+import { HOTEL } from '@/data/hotel';
+import { priceText, useLiveRooms } from '@/lib/useLiveRooms';
 
 const RoomDetail = () => {
   const { id } = useParams();
@@ -111,7 +111,7 @@ const RoomDetail = () => {
             <div className="sticky top-28 bg-ink p-8 text-ivory sm:p-10">
               <p className="text-[10px] uppercase tracking-luxe text-gold">Best rate, booked direct</p>
               <p className="mt-4 font-display text-5xl">
-                {formatINR(room.price)}<span className="font-sans text-sm text-ivory/50"> / night</span>
+                {priceText(room)}<span className="font-sans text-sm text-ivory/50"> / night</span>
               </p>
               <p className="mt-1 text-xs text-ivory/40">+ {Math.round(HOTEL.gstRate * 100)}% GST · Room only</p>
               <div className="mt-8 space-y-3 border-y border-ivory/10 py-6 text-sm text-ivory/70">

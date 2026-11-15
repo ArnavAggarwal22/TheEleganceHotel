@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight, BedDouble, Maximize2, Users } from 'lucide-react';
 import Img from './Img';
 import Reveal from './Reveal';
-import { formatINR, type Room } from '@/data/hotel';
+import { type Room } from '@/data/hotel';
+import { priceText } from '@/lib/useLiveRooms';
 
 const RoomCard = ({ room, index }: { room: Room; index: number }) => (
   <Reveal delay={index * 0.12} className="group">
@@ -15,7 +16,7 @@ const RoomCard = ({ room, index }: { room: Room; index: number }) => (
           <ArrowUpRight size={18} />
         </div>
         <div className="absolute inset-x-0 bottom-0 p-6 text-ivory">
-          <p className="text-[10px] uppercase tracking-luxe text-gold-light">From {formatINR(room.price)} / night</p>
+          <p className="text-[10px] uppercase tracking-luxe text-gold-light">From {priceText(room)} / night</p>
           <h3 className="mt-2 text-[2rem] leading-none">{room.name}</h3>
           <div className="mt-4 grid grid-cols-3 gap-2 overflow-hidden text-[11px] text-ivory/75 transition-all duration-700 lg:max-h-0 lg:opacity-0 lg:group-hover:max-h-20 lg:group-hover:opacity-100">
             <span className="flex items-center gap-1.5"><Maximize2 size={12} /> {room.size}</span>

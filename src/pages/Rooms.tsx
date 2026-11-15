@@ -3,8 +3,8 @@ import { ArrowRight, BedDouble, Check, Eye, Maximize2, Users } from 'lucide-reac
 import Img from '@/components/Img';
 import PageHero from '@/components/PageHero';
 import Reveal from '@/components/Reveal';
-import { HOTEL, IMAGES, formatINR } from '@/data/hotel';
-import { useLiveRooms } from '@/lib/useLiveRooms';
+import { HOTEL, IMAGES } from '@/data/hotel';
+import { priceText, useLiveRooms } from '@/lib/useLiveRooms';
 
 const Rooms = () => {
   const ROOMS = useLiveRooms();
@@ -30,7 +30,7 @@ const Rooms = () => {
             </Reveal>
 
             <div className="lg:col-span-5">
-              <Reveal><span className="eyebrow">From {formatINR(room.price)} / night</span></Reveal>
+              <Reveal><span className="eyebrow">From {priceText(room)} / night</span></Reveal>
               <Reveal delay={0.08}><h2 className="mt-5 text-5xl leading-none sm:text-6xl">{room.name}</h2></Reveal>
               <Reveal delay={0.14}><p className="mt-6 text-[15.5px] leading-relaxed text-ink/60">{room.description}</p></Reveal>
               <Reveal delay={0.2} className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-ink/10 py-6 text-sm text-ink/70">
